@@ -193,7 +193,16 @@ def seed():
                 ("shared-responsibility-model", "Shared Responsibility Model", "Security responsibilities are shared between cloud provider and customer.", "**In IaaS**: Microsoft manages physical infrastructure; you manage OS, data, applications.\n**In PaaS**: Microsoft manages OS, runtime; you manage data and applications.\n**In SaaS**: Microsoft manages everything; you manage users and data access.", "Think of it like renting an apartment. The landlord (cloud provider) maintains the building structure, utilities, and security. You (customer) are responsible for what's inside your apartment — your furniture, locks, and who you give keys to.", "The shared responsibility model defines which security tasks belong to the cloud provider versus the customer. As you move from IaaS to PaaS to SaaS, the provider takes on more responsibility.", "In Azure SaaS (like Microsoft 365), Microsoft manages almost everything. You're responsible for managing user access and ensuring the right people have access to data.", "In SaaS: Customer = data + access. In IaaS: Customer = OS + data + network. In PaaS: Customer = data + applications.", "Remember: Customer always manages data, identity, and on-premises resources regardless of service model.", "Thinking the provider is responsible for everything in SaaS. Customer still manages data classification, users, and access."),
             ]
 
-            for topic_slug, concept_name, short_def, simple_exp, detailed_exp, examples, key_pts, tips, mistakes in concept_data:
+            for item in concept_data:
+                topic_slug = item[0]
+                concept_name = item[1]
+                short_def = item[2]
+                simple_exp = item[3]
+                detailed_exp = item[4]
+                examples = item[5]
+                key_pts = item[6]
+                tips = item[7]
+                mistakes = item[8] if len(item) > 8 else ""
                 topic_id = topics_map.get(topic_slug)
                 if not topic_id:
                     continue
@@ -666,14 +675,14 @@ def seed():
         # Career Paths
         # ============================================================
         career_data = [
-            ("Cloud Engineer", "cloud-engineer", "Design, implement, and manage cloud infrastructure on Azure, AWS, or hybrid environments.", "intermediate", 12, "Cloud Computing, Virtual Networking, Storage, Identity Management, ARM Templates")
-            ("Cloud Security Engineer", "cloud-security-engineer", "Secure cloud environments, implement zero trust, and manage compliance across cloud platforms.", "advanced", 18, "Zero Trust, Network Security, Identity & Access, Encryption, Compliance, Incident Response")
-            ("Cybersecurity Analyst", "cybersecurity-analyst", "Monitor, detect, and respond to cybersecurity threats and vulnerabilities.", "intermediate", 15, "Threat Detection, SIEM, Network Security, Vulnerability Management, Incident Response")
-            ("Network Engineer", "network-engineer", "Design, implement, and manage enterprise network infrastructure.", "intermediate", 14, "TCP/IP, Routing, Switching, DNS, VPN, Network Security, Wireless")
-            ("DevOps Engineer", "devops-engineer", "Bridge development and operations with CI/CD, automation, and cloud-native practices.", "intermediate", 16, "CI/CD, Containers, Kubernetes, Infrastructure as Code, Monitoring, Cloud Services")
-            ("Cloud Developer", "cloud-developer", "Build cloud-native applications using modern architectures and serverless patterns.", "intermediate", 14, "Cloud Services, APIs, Serverless, Containers, Databases, Security")
-            ("AI/ML Engineer", "ai-ml-engineer", "Design and implement AI and machine learning solutions on cloud platforms.", "advanced", 20, "Machine Learning, Data Science, Cloud AI Services, MLOps, Statistics")
-            ("Systems Administrator", "systems-administrator", "Manage and maintain operating systems, servers, and enterprise infrastructure.", "beginner", 10, "Linux, Windows Server, Networking, Security, Virtualization, Troubleshooting")
+            ("Cloud Engineer", "cloud-engineer", "Design, implement, and manage cloud infrastructure on Azure, AWS, or hybrid environments.", "intermediate", 12, "Cloud Computing, Virtual Networking, Storage, Identity Management, ARM Templates"),
+            ("Cloud Security Engineer", "cloud-security-engineer", "Secure cloud environments, implement zero trust, and manage compliance across cloud platforms.", "advanced", 18, "Zero Trust, Network Security, Identity & Access, Encryption, Compliance, Incident Response"),
+            ("Cybersecurity Analyst", "cybersecurity-analyst", "Monitor, detect, and respond to cybersecurity threats and vulnerabilities.", "intermediate", 15, "Threat Detection, SIEM, Network Security, Vulnerability Management, Incident Response"),
+            ("Network Engineer", "network-engineer", "Design, implement, and manage enterprise network infrastructure.", "intermediate", 14, "TCP/IP, Routing, Switching, DNS, VPN, Network Security, Wireless"),
+            ("DevOps Engineer", "devops-engineer", "Bridge development and operations with CI/CD, automation, and cloud-native practices.", "intermediate", 16, "CI/CD, Containers, Kubernetes, Infrastructure as Code, Monitoring, Cloud Services"),
+            ("Cloud Developer", "cloud-developer", "Build cloud-native applications using modern architectures and serverless patterns.", "intermediate", 14, "Cloud Services, APIs, Serverless, Containers, Databases, Security"),
+            ("AI/ML Engineer", "ai-ml-engineer", "Design and implement AI and machine learning solutions on cloud platforms.", "advanced", 20, "Machine Learning, Data Science, Cloud AI Services, MLOps, Statistics"),
+            ("Systems Administrator", "systems-administrator", "Manage and maintain operating systems, servers, and enterprise infrastructure.", "beginner", 10, "Linux, Windows Server, Networking, Security, Virtualization, Troubleshooting"),
         ]
 
         career_paths = {}
