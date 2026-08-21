@@ -18,7 +18,7 @@ export default function CareersPage() {
 
   const loadCareers = async () => {
     try {
-      const data = await api.get<any>("/api/careers");
+      const data = await api.get<any>("/api/careers/");
       setCareers(data.career_paths || []);
     } catch (err) {
       console.error(err);
