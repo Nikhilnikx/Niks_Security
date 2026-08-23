@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, DateTime, Enum as SAEnum, Text
+from sqlalchemy import Column, Integer, String, DateTime, Enum as SAEnum, Text, Boolean
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -27,6 +27,7 @@ class Organization(Base):
     max_users = Column(Integer, default=5, nullable=False)
     max_assets = Column(Integer, default=10, nullable=False)
     max_events_per_day = Column(Integer, default=10000, nullable=False)
+    onboarding_completed = Column(Boolean, default=False, nullable=False)
 
     # Relationships
     members = relationship("User", back_populates="organization")

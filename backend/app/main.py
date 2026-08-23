@@ -41,6 +41,29 @@ def on_startup():
     finally:
         db.close()
 
+# Simple in-memory rate limiter for auth endpoints
+import collections
+_auth_attempts: dict = collections.defaultdict(list)
+RATE_LIMIT_AUTH = 10  # max attempts
+RATE_LIMIT_WINDOW = 300  # 5 minutes
+
+@app.middleware("http")
+async def rate_limit_auth(request: Request, call_next):
+    """Rate-limit auth endpoints to prevent brute-force attacks."""
+    path = request.url.path
+    if path in ("/api/auth/login", "/api/auth/signup"):
+        client_ip = request.client.host if request.client else "unknown"
+        key = f"{client_ip}:{path}"
+        now = __import__("time").time()
+        # Clean old entries
+        _auth_attempts[key] = [t for t in _auth_attempts[key] if now - t < RATE_LIMIT_WINDOW]
+        if len(_auth_attempts[key]) >= RATE_LIMIT_AUTH:
+            from fastapi.responses import JSONResponse
+            return JSONResponse(status_code=429, content={"detail": "Too many attempts. Please try again later."})
+        _auth_attempts[key].append(now)
+    return await call_next(request)
+
+
 # Health checks
 @app.get("/health")
 async def health():
@@ -54,7 +77,9 @@ async def readiness():
 from app.api import auth, dashboard, alerts, incidents, assets, logs, detection_rules
 from app.api import threat_intel, mitre, notifications, audit_logs, reports, simulation, settings as settings_api
 from app.api import onboarding
+from app.copilot import api as copilot_api
 from app.models import notification_config  # Ensure table is created on startup
+from app.models import password_reset  # Ensure table is created on startup
 
 app.include_router(auth.router)
 app.include_router(dashboard.router)
@@ -71,6 +96,7 @@ app.include_router(reports.router)
 app.include_router(simulation.router)
 app.include_router(settings_api.router)
 app.include_router(onboarding.router)
+app.include_router(copilot_api.router)
 
 
 @app.get("/api/events/stream")

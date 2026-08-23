@@ -4,10 +4,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import {
   Shield, LayoutDashboard, AlertTriangle, FileWarning, Target, FileText, Settings, Bell, LogOut,
-  Menu, X, Upload, ShieldCheck, Activity, Globe, BarChart3, Users
+  Menu, X, Upload, ShieldCheck, Activity, Globe, BarChart3, Users, Crown
 } from "lucide-react";
 import { apiFetch } from "@/lib/utils";
 import { useRealtimeAlerts } from "@/lib/useRealtimeAlerts";
+import dynamic from "next/dynamic";
+
+const CopilotPanel = dynamic(() => import("@/components/Copilot/CopilotPanel"), { ssr: false });
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -21,6 +24,10 @@ const navItems = [
   { href: "/dashboard/reports", label: "Reports", icon: BarChart3 },
   { href: "/dashboard/simulation", label: "Attack Simulation", icon: Zap },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
+];
+
+const adminNavItems = [
+  { href: "/dashboard/admin", label: "Admin Panel", icon: Crown },
 ];
 
 function Zap(props: any) {
@@ -126,6 +133,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             );
           })}
+          {/* Admin section (only for admins) */}
+          {user?.role === "admin" && (
+            <>
+              <div className={`my-2 mx-3 border-t border-slate-800/50 ${!sidebarOpen ? "mx-1" : ""}`} />
+              {sidebarOpen && <div className="px-3 py-1 text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Admin</div>}
+              {adminNavItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      isActive
+                        ? "bg-purple-600/15 text-purple-400 border border-purple-500/20 shadow-lg shadow-purple-500/5"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    }`}
+                    title={!sidebarOpen ? item.label : undefined}
+                  >
+                    <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-purple-400" : ""}`} />
+                    {sidebarOpen && <span className="whitespace-nowrap">{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </>
+          )}
         </nav>
 
         {/* Protection Status */}
@@ -197,6 +229,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </Link>
                 );
               })}
+              {user?.role === "admin" && (
+                <>
+                  <div className="my-2 mx-3 border-t border-slate-800/50" />
+                  <div className="px-3 py-1 text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Admin</div>
+                  {adminNavItems.map((item) => (
+                    <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium ${pathname === item.href ? "bg-purple-600/15 text-purple-400 border border-purple-500/20" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}>
+                      <Crown className="w-5 h-5" />{item.label}
+                    </Link>
+                  ))}
+                </>
+              )}
             </nav>
           </aside>
         </div>
@@ -269,6 +312,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
         )}
+
+        {/* AI Copilot */}
+        <CopilotPanel />
 
         {/* Connection indicator */}
         <div className="fixed bottom-4 right-4 z-40">

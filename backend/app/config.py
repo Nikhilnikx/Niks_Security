@@ -38,6 +38,14 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     ALLOWED_EXTENSIONS: str = "log,txt,csv,json"
 
+    # AI Copilot
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3.2"
+    AI_PROVIDER: str = "ollama"
+    COPILOT_ENABLED: bool = True
+    COPILOT_MAX_TOKENS: int = 4096
+    COPILOT_TIMEOUT: int = 120
+
     class Config:
         env_file = ".env"
         case_sensitive = True

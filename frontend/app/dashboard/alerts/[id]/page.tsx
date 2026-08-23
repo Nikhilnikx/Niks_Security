@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { apiFetch, formatRelativeTime, severityColor, statusColor } from "@/lib/utils";
-import { AlertTriangle, ArrowLeft, Clock, Globe, Shield, Target, FileText, User, ExternalLink, CheckCircle, XCircle, Ban } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Clock, Globe, Shield, Target, FileText, User, ExternalLink, CheckCircle, XCircle, Ban, Bot } from "lucide-react";
 import Link from "next/link";
 
 export default function AlertDetailPage() {
@@ -118,6 +118,13 @@ export default function AlertDetailPage() {
             className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm transition-colors"
           >
             {actionLoading === "incident" ? "Creating..." : "Create Incident"}
+          </button>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("copilot-investigate-alert", { detail: { alertId: Number(params.id) } }))}
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white text-sm font-medium transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2"
+          >
+            <Bot className="w-4 h-4" />
+            Investigate with AI
           </button>
         </div>
       </div>

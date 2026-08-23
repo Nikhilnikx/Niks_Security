@@ -31,12 +31,25 @@ class QuickRule(BaseModel):
 @router.get("/status")
 def get_onboarding_status(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Check if user needs onboarding and return progress."""
+    org = current_user.organization
     org_id = current_user.organization_id
+
+    # If onboarding was already marked complete, skip immediately
+    if org and org.onboarding_completed:
+        return {
+            "onboarding_needed": False,
+            "steps": {"org_setup": True, "team_invite": True, "detection_rules": True},
+            "completed": 3,
+            "total": 3,
+            "progress_pct": 100,
+            "member_count": 0,
+            "rule_count": 0,
+        }
 
     # Check what's been set up
     member_count = db.query(User).filter(User.organization_id == org_id).count()
     rule_count = db.query(DetectionRule).filter(DetectionRule.organization_id == org_id).count()
-    has_org_name = bool(current_user.organization and current_user.organization.name != f"{current_user.username}'s Organization")
+    has_org_name = bool(org and org.name != f"{current_user.username}'s Organization")
 
     steps = {
         "org_setup": has_org_name,
@@ -255,6 +268,12 @@ def setup_quick_rules(data: dict, current_user: User = Depends(get_current_user)
 @router.post("/complete")
 def complete_onboarding(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Mark onboarding as complete."""
+    # Set the flag on the organization
+    org = current_user.organization
+    if org:
+        org.onboarding_completed = True
+        db.commit()
+
     # Record in audit log
     audit = AuditLog(
         action="onboarding_completed",
