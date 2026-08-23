@@ -1,199 +1,300 @@
-# Niksmind — Certification Preparation Platform
+# NIKS SECURITY — Cybersecurity SaaS Platform
 
-**Prepare. Practice. Master.**
-
-A unified certification preparation platform for Microsoft, AWS, Cisco, and CompTIA certifications.
-
-## Features
-
-- 🎯 **Practice Engine** — 50 free + 50 premium MCQs per topic
-- 📝 **Mock Exams** — Timed exam simulation with domain-weighted distribution
-- 🧠 **Adaptive Learning** — AI-powered weak area detection
-- 🤖 **AI Tutor** — Ollama-powered grounded Q&A
-- 🃏 **Flashcards** — Spaced repetition learning
-- 📊 **Progress Analytics** — Readiness scores and mastery tracking
-- 💳 **Payments** — Razorpay integration with server-side verification
-- 🚀 **Career Paths** — Personalized certification roadmaps
-- 🏆 **Gamification** — XP, levels, and achievements
-- 🔔 **Notifications** — Smart reminders and updates
-- 📄 **Document Intelligence** — Upload and query study materials
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 14, React 18, TypeScript, Tailwind CSS |
-| Backend | Python 3.11, FastAPI, SQLAlchemy, Alembic |
-| Database | PostgreSQL 16 + pgvector |
-| AI | Ollama (local LLM) |
-| Payments | Razorpay |
-| Animations | React Bits (Antigravity, SplitText, CountUp) |
+> **Detect. Investigate. Respond.**
+> Real-time threat detection and security intelligence platform for modern infrastructure.
 
 ---
 
-## Quick Start (Development)
+## 🛡️ Overview
 
-### Prerequisites
-- Node.js 18+
-- Python 3.11+
-- Docker
+NIKS SECURITY is a production-ready, enterprise-grade Security Operations Center (SOC) platform built with:
 
-### 1. Start PostgreSQL
-```bash
-docker run -d --name niksmind-db \
-  -e POSTGRES_DB=niksmind \
-  -e POSTGRES_USER=niksmind \
-  -e POSTGRES_PASSWORD=niksmind \
-  -p 5432:5432 pgvector/pgvector:pg16
+- **Backend:** FastAPI + SQLAlchemy + SQLite (upgradeable to PostgreSQL)
+- **Frontend:** Next.js 14 + React 18 + TailwindCSS + Recharts
+- **Auth:** JWT-based authentication with role-based access control
+- **Detection Engine:** Modular rule-based threat detection pipeline
+
+The platform follows the complete security workflow:
+
 ```
-
-### 2. Backend
-```bash
-cd backend
-pip install -r requirements.txt
-cp ../.env.example .env
-python seed.py
-uvicorn app.main:app --reload --port 8000
-```
-
-### 3. Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### 4. Open
-- **Frontend**: http://localhost:3000
-- **API Docs**: http://localhost:8000/docs
-
-### Demo Account
-| Email | Password | Role |
-|-------|----------|------|
-| demo@niksmind.com | demo123 | User |
-| admin@niksmind.com | admin123 | Admin |
-
----
-
-## Production Deployment
-
-### Option 1: Docker Compose (Recommended)
-
-```bash
-# 1. Configure environment
-cp .env.production .env.production.local
-# Edit .env.production.local with your values
-
-# 2. Deploy
-chmod +x deploy.sh
-./deploy.sh
-
-# 3. Access
-# Frontend: https://yourdomain.com
-# API: https://api.yourdomain.com
-```
-
-### Option 2: Vercel + Docker Backend
-
-**Frontend (Vercel):**
-```bash
-cd frontend
-# Connect to Vercel via GitHub
-# Set environment variables in Vercel dashboard:
-#   NEXT_PUBLIC_API_URL=https://api.yourdomain.com
-```
-
-**Backend (Docker):**
-```bash
-cd backend
-docker build -t niksmind-backend .
-docker run -d --name niksmind-api \
-  -p 8000:8000 \
-  -e DATABASE_URL=postgresql://... \
-  -e SECRET_KEY=... \
-  niksmind-backend
-```
-
-### Option 3: VPS (DigitalOcean, Hetzner, etc.)
-
-```bash
-# Install Docker
-curl -fsSL https://get.docker.com | sh
-
-# Clone and deploy
-git clone <repo-url> niksmind
-cd niksmind
-cp .env.production .env.production.local
-# Edit .env.production.local
-chmod +x deploy.sh
-./deploy.sh
+COLLECT → NORMALIZE → DETECT → CORRELATE → ENRICH → ALERT → INVESTIGATE → RESPOND → REPORT
 ```
 
 ---
 
-## Project Structure
+## 🚀 Features
+
+### Core Security
+- **Threat Detection Engine** — 10+ built-in detection rules (brute force, port scanning, SQL injection, XSS, command injection, etc.)
+- **Alert Management** — Full lifecycle with severity, status, confidence scoring, MITRE mapping
+- **Incident Management** — NEW → TRIAGED → INVESTIGATING → CONTAINED → RESOLVED workflow
+- **MITRE ATT&CK** — Technique matrix mapping with detection counts
+- **Threat Intelligence** — IP, domain, hash lookup with risk scoring and geolocation
+- **Log Management** — Upload, parse, normalize, search, and export security logs
+
+### Platform
+- **Multi-tenant SaaS** — Organizations, workspaces, and data isolation
+- **RBAC** — Admin, Security Analyst, and Viewer roles
+- **Dashboard** — Real-time security score, charts, alerts over time, severity distribution
+- **Attack Simulation** — Safe, controlled attack simulations for testing detection rules
+- **Reports** — Generate security summaries, incident reports, threat reports
+- **API Keys** — REST API with key-based authentication
+- **Audit Logging** — Track all sensitive actions
+- **Notifications** — In-app notification system
+
+### Design
+- Dark enterprise SOC aesthetic
+- Premium cybersecurity visual identity
+- Responsive design (desktop, tablet, mobile)
+- Glass effects, gradient borders, severity indicators
+- Professional data visualization with Recharts
+
+---
+
+## 📁 Project Structure
 
 ```
 niksmind/
-├── frontend/              Next.js frontend
-│   ├── app/               Pages and routes
-│   ├── components/        React components
-│   │   ├── animations/    React Bits animations
-│   │   └── layout/        Navigation, sidebar
-│   ├── lib/               API client, store
-│   └── types/             TypeScript types
-│
-├── backend/               FastAPI backend
+├── backend/
 │   ├── app/
-│   │   ├── api/           API routes (14 routers)
-│   │   ├── models/        SQLAlchemy models (25+)
-│   │   ├── auth/          JWT authentication
-│   │   └── main.py        FastAPI app
-│   ├── migrations/        Alembic migrations
-│   └── seed.py            Database seeder
-│
-├── nginx/                 Reverse proxy config
-├── docker-compose.yml     Development compose
-├── docker-compose.prod.yml Production compose
-├── deploy.sh              Deployment script
-└── .env.production        Production env template
+│   │   ├── api/           # API route handlers
+│   │   │   ├── auth.py    # Authentication endpoints
+│   │   │   ├── dashboard.py
+│   │   │   ├── alerts.py
+│   │   │   ├── incidents.py
+│   │   │   ├── logs.py
+│   │   │   ├── assets.py
+│   │   │   ├── detection_rules.py
+│   │   │   ├── threat_intel.py
+│   │   │   ├── mitre.py
+│   │   │   ├── reports.py
+│   │   │   ├── simulation.py
+│   │   │   ├── notifications.py
+│   │   │   ├── audit_logs.py
+│   │   │   ├── settings.py
+│   │   │   └── __init__.py
+│   │   ├── detector/      # Detection engine
+│   │   │   ├── parser.py  # Log parsing
+│   │   │   ├── rules.py   # Detection rules
+│   │   │   └── risk.py    # Risk scoring
+│   │   ├── models/        # SQLAlchemy models
+│   │   ├── auth.py        # JWT authentication
+│   │   ├── config.py      # Configuration
+│   │   ├── database.py    # Database setup
+│   │   └── main.py        # FastAPI application
+│   ├── requirements.txt
+│   └── Dockerfile
+├── frontend/
+│   ├── app/
+│   │   ├── page.tsx       # Root redirect
+│   │   ├── home/          # Public landing page
+│   │   ├── login/         # Authentication
+│   │   ├── signup/        # Registration
+│   │   └── dashboard/     # Authenticated SOC dashboard
+│   │       ├── layout.tsx # Sidebar + topbar
+│   │       ├── page.tsx   # Dashboard overview
+│   │       ├── alerts/    # Alert management
+│   │       ├── incidents/ # Incident management
+│   │       ├── logs/      # Log management
+│   │       ├── assets/    # Asset tracking
+│   │       ├── rules/     # Detection rule management
+│   │       ├── mitre/     # MITRE ATT&CK mapping
+│   │       ├── threat-intel/ # Threat intelligence
+│   │       ├── reports/   # Report generation
+│   │       ├── simulation/ # Attack simulation
+│   │       └── settings/  # User settings
+│   ├── lib/
+│   │   ├── utils.ts       # API client, helpers
+│   │   └── store.ts       # Zustand store
+│   ├── package.json
+│   └── Dockerfile
+├── docker-compose.yml
+└── .env.example
 ```
 
 ---
 
-## API Endpoints
+## 🏃 Quick Start
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/auth/register` | POST | User registration |
-| `/api/auth/login` | POST | User login |
-| `/api/certifications` | GET | List certifications |
-| `/api/careers/` | GET | Career paths |
-| `/api/quizzes/start` | POST | Start practice quiz |
-| `/api/mock-exams/start` | POST | Start mock exam |
-| `/api/ai/chat` | POST | AI tutor chat |
-| `/api/payments/create-order` | POST | Create Razorpay order |
-| `/api/dashboard` | GET | User dashboard |
-| `/api/activity/streak` | GET | Study streak |
+### Prerequisites
 
-Full API docs: http://localhost:8000/docs
+- Python 3.10+
+- Node.js 18+
+- npm
+
+### Backend Setup
+
+```bash
+cd backend
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
+uvicorn app.main:app --reload --port 8000
+```
+
+### Frontend Setup
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Access
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+- **API Docs:** http://localhost:8000/docs
 
 ---
 
-## Environment Variables
+## 🐳 Docker Setup
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | ✅ | PostgreSQL connection string |
-| `SECRET_KEY` | ✅ | JWT signing secret |
-| `OLLAMA_BASE_URL` | ⚡ | Ollama server URL |
-| `RAZORPAY_KEY_ID` | 💳 | Razorpay API key |
-| `RAZORPAY_KEY_SECRET` | 💳 | Razorpay secret |
-| `NEXT_PUBLIC_API_URL` | ✅ | Backend API URL |
-| `FRONTEND_URL` | ✅ | Frontend URL for CORS |
+```bash
+# Copy environment variables
+cp .env.example .env
+# Edit .env with your settings
+
+# Build and start
+docker-compose up --build
+
+# Or run in background
+docker-compose up -d
+```
 
 ---
 
-## License
+## 📊 Detection Rules
 
-Private — All rights reserved.
+The platform includes 10 built-in detection rules:
+
+| Rule | Severity | MITRE | Description |
+|------|----------|-------|-------------|
+| SSH Brute Force | HIGH | T1110 | Detects repeated failed SSH logins |
+| Port Scanning | MEDIUM | T1046 | Detects multi-port connection attempts |
+| SQL Injection | CRITICAL | T1190 | Detects SQL injection patterns |
+| XSS Attack | MEDIUM | T1189 | Detects cross-site scripting payloads |
+| Command Injection | CRITICAL | T1059 | Detects OS command injection |
+| Suspicious Authentication | HIGH | T1078 | Detects unusual login patterns |
+| Malware Indicators | CRITICAL | T1059 | Detects known malware signatures |
+| Suspicious Process | HIGH | T1059 | Detects suspicious process activity |
+| Privilege Escalation | CRITICAL | T1068 | Detects privilege escalation attempts |
+| Abnormal Network | MEDIUM | T1071 | Detects unusual network patterns |
+
+---
+
+## 🔒 Security
+
+- JWT-based authentication with bcrypt password hashing
+- Tenant isolation (organization-scoped data access)
+- Role-based access control (Admin, Analyst, Viewer)
+- CORS configuration
+- Input validation via Pydantic
+- API key authentication for programmatic access
+- Audit logging for sensitive operations
+- No secrets exposed to frontend
+
+---
+
+## 🧪 Attack Simulation
+
+The platform includes a safe simulation mode for testing:
+
+1. Navigate to **Attack Simulation** in the dashboard
+2. Select an attack type (Brute Force, Port Scan, SQL Injection, etc.)
+3. Click **Run Simulation**
+4. Events are generated and processed through the detection pipeline
+5. View generated alerts and investigate
+
+⚠️ All simulations are controlled and safe. No real attacks are performed.
+
+---
+
+## 📖 API Documentation
+
+Once the backend is running, visit:
+
+- **Swagger UI:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
+
+### Key Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/signup` | Create account |
+| POST | `/api/auth/login` | Login |
+| GET | `/api/dashboard/summary` | Dashboard data |
+| GET | `/api/alerts` | List alerts |
+| GET | `/api/incidents` | List incidents |
+| POST | `/api/logs/upload` | Upload log files |
+| POST | `/api/simulation/run` | Run attack simulation |
+| GET | `/api/mitre/mapping` | MITRE ATT&CK mapping |
+| GET | `/api/threat-intel/lookup` | IOC investigation |
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Frontend   │────▶│    Backend    │────▶│   Database   │
+│  (Next.js)   │     │   (FastAPI)   │     │  (SQLite)    │
+│   Port 3000  │     │   Port 8000   │     │              │
+└─────────────┘     └──────┬───────┘     └─────────────┘
+                           │
+                    ┌──────▼───────┐
+                    │   Detection   │
+                    │    Engine     │
+                    └──────────────┘
+```
+
+### Detection Pipeline
+
+1. **Collect** — Ingest logs from files, APIs, or simulations
+2. **Parse** — Extract structured fields from raw logs
+3. **Detect** — Match events against detection rules
+4. **Score** — Calculate risk scores and confidence
+5. **Alert** — Generate severity-ranked alerts
+6. **Correlate** — Link related alerts and events
+
+---
+
+## 📝 Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | Database connection string | `sqlite:///./data/app.db` |
+| `JWT_SECRET` | Secret key for JWT tokens | Required |
+| `CORS_ORIGINS` | Allowed CORS origins | `http://localhost:3000` |
+| `ENVIRONMENT` | App environment | `development` |
+| `NEXT_PUBLIC_API_URL` | Backend API URL for frontend | `http://localhost:8000` |
+
+---
+
+## 📄 License
+
+MIT License © 2026 Niks Security
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to branch
+5. Create a Pull Request
+
+---
+
+**Built with ❤️ for security teams everywhere.**

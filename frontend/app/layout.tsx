@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "Niksmind - Certification Preparation Platform",
-  description: "Prepare, Practice, Master your Microsoft, AWS, Cisco, and CompTIA certifications with AI-powered learning.",
+  title: "Niks Security - Cybersecurity SaaS Platform",
+  description: "Detect. Investigate. Respond. Real-time threat detection and security intelligence for modern infrastructure.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="dark">
+      <body className="min-h-screen bg-[#0a0e1a] text-slate-200 antialiased">
+        {children}
+      </body>
     </html>
   );
 }

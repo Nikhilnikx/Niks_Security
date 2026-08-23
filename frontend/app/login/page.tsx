@@ -1,18 +1,22 @@
 "use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { api } from "@/lib/api";
-import { useAuthStore } from "@/lib/store";
+import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Shield, Eye, EyeOff } from "lucide-react";
+
+const Antigravity = dynamic(() => import("../../components/Antigravity/Antigravity"), { ssr: false });
 
 export default function LoginPage() {
   const router = useRouter();
-  const setAuth = useAuthStore((s) => s.setAuth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,77 +24,121 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const data = await api.post<{ id: number; name: string; email: string; role: string; token: string }>(
-        "/api/auth/login",
-        { email, password }
-      );
-      setAuth({ id: data.id, name: data.name, email: data.email, role: data.role }, data.token);
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.detail || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Login failed");
-    } finally {
+    } catch {
+      setError("Connection failed. Please try again.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-blue-50 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#080b16] px-4 relative overflow-hidden">
+      {/* Grid background */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: "radial-gradient(circle at 1px 1px, rgba(168,85,247,0.5) 1px, transparent 0)", backgroundSize: "40px 40px"}} />
+
+      {/* Purple glow blobs */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[150px]" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-600/8 rounded-full blur-[150px]" />
+
+      {/* Antigravity particle background */}
+      <div className="absolute inset-0 z-0" style={{ opacity: 0.25 }}>
+        {mounted && (
+          <Antigravity
+            count={150}
+            magnetRadius={6}
+            ringRadius={7}
+            waveSpeed={0.4}
+            waveAmplitude={1}
+            particleSize={1.2}
+            lerpSpeed={0.05}
+            color="#a855f7"
+            autoAnimate={true}
+            particleVariance={1}
+          />
+        )}
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">N</div>
-            <span className="text-2xl font-bold text-gray-900">Niksmind</span>
+          <Link href="/home" className="inline-flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">NIKS SECURITY</span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-          <p className="text-gray-600 mt-2">Sign in to continue your certification journey</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Welcome back</h1>
+          <p className="text-slate-400 text-sm">Sign in to your security dashboard</p>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 space-y-5">
+        {/* Form */}
+        <div className="p-8 rounded-2xl border border-slate-800/50 bg-slate-900/30 backdrop-blur-xl">
           {error && (
-            <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>
+            <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              {error}
+            </div>
           )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              placeholder="you@example.com"
-              required
-            />
-          </div>
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                placeholder="you@company.com"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              placeholder="••••••••"
-              required
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                  placeholder="••••••••"
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-purple-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium transition-all hover:shadow-lg hover:shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+        </div>
 
-          <div className="text-center text-sm text-gray-600">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-purple-600 font-semibold hover:underline">Sign up</Link>
-          </div>
-
-          <div className="text-center text-xs text-gray-400 mt-2">
-            Demo: demo@niksmind.com / demo123
-          </div>
-        </form>
+        <p className="text-center mt-6 text-sm text-slate-400">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="text-purple-400 hover:text-purple-300 transition-colors">Sign up free</Link>
+        </p>
       </div>
     </div>
   );

@@ -1,12 +1,45 @@
+# Dependencies
 node_modules/
-.next/
-.env
-*.pyc
 __pycache__/
-uploads/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Build output
+.next/
+out/
 dist/
 build/
-.DS_Store
-*.log
+*.egg-info/
+
+# Environment
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Database
+*.db
+instance/
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads
+uploads/
+
+# Logs
+*.log
+.freebuff/
+
+# Test
+coverage/
+.pytest_cache/
