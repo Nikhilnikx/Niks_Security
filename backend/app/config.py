@@ -40,7 +40,7 @@ class Settings(BaseSettings):
 
     # AI Copilot
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_MODEL: str = "llama3.2"
+    OLLAMA_MODEL: str = "qwen2.5:0.5b"
     AI_PROVIDER: str = "ollama"
     COPILOT_ENABLED: bool = True
     COPILOT_MAX_TOKENS: int = 4096
